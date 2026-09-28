@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BizBuddy Match — Walla Walla University</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1E2A22;
+    --ink-soft: #4A5750;
+    --paper: #EFEAE0;
+    --paper-raised: #F7F4EC;
+    --line: #D8D0BE;
+    --forest: #33493B;
+    --forest-deep: #223129;
+    --gold: #B98A2E;
+    --gold-soft: #E8D9B5;
+    --white: #FFFDF8;
+    --radius-card: 4px;
+    --shadow: 0 1px 0 rgba(30,42,34,0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #ECE7DA;
+      --ink-soft: #B7B1A0;
+      --paper: #1B211C;
+      --paper-raised: #232B24;
+      --line: #37413A;
+      --forest: #7FA98D;
+      --forest-deep: #9EC2AB;
+      --gold: #D9AE5C;
+      --gold-soft: #3A3220;
+      --white: #232B24;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #ECE7DA;
+    --ink-soft: #B7B1A0;
+    --paper: #1B211C;
+    --paper-raised: #232B24;
+    --line: #37413A;
+    --forest: #7FA98D;
+    --forest-deep: #9EC2AB;
+    --gold: #D9AE5C;
+    --gold-soft: #3A3220;
+    --white: #232B24;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Public Sans', -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+  }
+
+  /* ---------- Header ---------- */
+  header.hero {
+    padding: 44px 20px 30px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, var(--paper-raised), var(--paper));
+  }
+  .hero-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  .kicker {
+    font-family: 'Public Sans', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--forest);
+    letter-spacing: 0.02em;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-size: clamp(32px, 6vw, 48px);
+    line-height: 1.05;
+    margin: 6px 0 12px;
+    color: var(--ink);
+  }
+  .hero-sub {
+    max-width: 46ch;
+    color: var(--ink-soft);
+    font-size: 16px;
+    margin: 0;
+  }
+
+  .role-switch {
+    display: inline-flex;
+    margin-top: 26px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--white);
+    padding: 3px;
+    gap: 2px;
+  }
+  .role-switch button {
+    border: none;
+    background: transparent;
+    font-family: 'Public Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 9px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    color: var(--ink-soft);
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .role-switch button.active {
+    background: var(--forest);
+    color: var(--white);
+  }
+
+  /* ---------- Layout ---------- */
+  main { padding-top: 28px; }
+  .layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  @media (max-width: 720px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  .filters {
+    position: sticky;
+    top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  @media (max-width: 720px) { .filters { position: static; } }
+
+  .filter-block label.block-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+  select, input[type="text"], input[type="email"], textarea {
+    width: 100%;
+    font-family: inherit;
+    font-size: 14px;
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: var(--white);
+    color: var(--ink);
+  }
+  select:focus, input:focus, textarea:focus, button:focus-visible {
+    outline: 2px solid var(--forest);
+    outline-offset: 1px;
+  }
+
+  .tag-picker { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag-chip {
+    font-size: 12.5px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--white);
+    color: var(--ink-soft);
+    cursor: pointer;
+    user-select: none;
+  }
+  .tag-chip.on {
+    background: var(--forest);
+    border-color: var(--forest);
+    color: var(--white);
+  }
+
+  .match-toggle {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .match-toggle input { width: 16px; height: 16px; accent-color: var(--forest); }
+
+  /* ---------- Cards ---------- */
+  .count-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+    color: var(--ink-soft);
+    font-size: 13.5px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px;
+  }
+  .card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+  }
+  .card.best::before {
+    content: "Strong match";
+    position: absolute;
+    top: -10px;
+    left: 14px;
+    background: var(--gold);
+    color: var(--forest-deep);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+  }
+  .card-name {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+  }
+  .card-sub {
+    font-size: 13px;
+    color: var(--forest);
+    font-weight: 600;
+    margin: -6px 0 0;
+  }
+  .card-bio {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    margin: 0;
+    flex-grow: 1;
+  }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .pill {
+    font-size: 11.5px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--gold-soft);
+    color: var(--forest-deep);
+    font-weight: 600;
+  }
+  .card-avail { font-size: 12.5px; color: var(--ink-soft); }
+  .card-actions { display: flex; gap: 8px; margin-top: 4px; }
+  .btn {
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 9px 14px;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .btn-primary { background: var(--forest); color: var(--white); flex: 1; }
+  .btn-primary:hover { background: var(--forest-deep); }
+  .btn-ghost { background: transparent; border-color: var(--line); color: var(--ink-soft); }
+  .btn-ghost:hover { border-color: var(--forest); color: var(--forest); }
+  .btn-wide { width: 100%; }
+  .btn-small { padding: 6px 10px; font-size: 12.5px; }
+
+  .empty {
+    padding: 50px 20px;
+    text-align: center;
+    color: var(--ink-soft);
+    border: 1px dashed var(--line);
+    border-radius: var(--radius-card);
+  }
+
+  /* ---------- Intake panel ---------- */
+  .intake-card {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 20px 22px;
+    margin-bottom: 22px;
+  }
+  .intake-card h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .intake-card p.hint { color: var(--ink-soft); font-size: 13.5px; margin: 0 0 16px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  @media (max-width: 560px) { .field-row { grid-template-columns: 1fr; } }
+  .field label { display: block; font-size: 12px; font-weight: 600; color: var(--ink-soft); margin-bottom: 6px; }
+  .saved-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .saved-line .who { font-size: 14px; }
+  .saved-line .who strong { font-family: 'Fraunces', serif; font-size: 17px; }
+
+  /* ---------- Leader view ---------- */
+  .leader-panel { max-width: 640px; }
+  .leader-panel .field { margin-bottom: 14px; }
+  .roster-mini { margin-top: 30px; }
+  .roster-mini h3 { font-family:'Fraunces', serif; font-size: 17px; margin-bottom: 10px; }
+  .mini-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 13.5px;
+  }
+  .mini-row .name { font-weight: 600; }
+
+  /* ---------- Toast ---------- */
+  #toast {
+    position: fixed;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--forest-deep);
+    color: var(--white);
+    padding: 11px 20px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 50;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ---------- Admin drawer ---------- */
+  #admin-fab {
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    cursor: pointer;
+    font-size: 15px;
+    z-index: 40;
+  }
+  #admin-panel {
+    position: fixed;
+    inset: 0;
+    background: rgba(20,26,21,0.45);
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px;
+    z-index: 60;
+    overflow-y: auto;
+  }
+  #admin-panel.open { display: flex; }
+  .admin-box {
+    background: var(--white);
+    border-radius: 6px;
+    max-width: 640px;
+    width: 100%;
+    padding: 26px 26px 30px;
+  }
+  .admin-box h2 { font-family: 'Fraunces', serif; margin-top: 0; }
+  .admin-close { float: right; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--ink-soft); }
+  .admin-list { max-height: 260px; overflow-y: auto; margin: 16px 0; border: 1px solid var(--line); border-radius: 4px; }
+  .admin-list-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--line); font-size: 13px; }
+  .admin-list-row:last-child { border-bottom: none; }
+  .admin-list-row button { background:none; border:none; color:#a33; cursor:pointer; font-size:12px; font-weight:600; }
+  textarea.json-box { min-height: 120px; font-family: ui-monospace, monospace; font-size: 12px; }
+  .muted { color: var(--ink-soft); font-size: 12.5px; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="kicker">BizBuddy — School of Business</div>
+    <h1>Find your BizBuddy</h1>
+    <p class="hero-sub">Incoming students browse current BizBuddy Leaders and reach out directly. Leaders keep their own profile up to date so the right people find them.</p>
+    <div class="role-switch" role="tablist">
+      <button id="tab-freshman" class="active" role="tab">I'm looking for a Buddy</button>
+      <button id="tab-leader" role="tab">I'm a BizBuddy Leader</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ FRESHMAN VIEW ============ -->
+  <section id="view-freshman">
+
+    <div class="intake-card" id="intake-card">
+      <h2>Tell leaders a bit about you</h2>
+      <p class="hint">Optional, but it lets us point you toward Leaders in your major or interests, and pre-fills your introduction email.</p>
+      <div id="intake-form">
+        <div class="field-row">
+          <div class="field">
+            <label for="f-name">Your name</label>
+            <input type="text" id="f-name" placeholder="Jordan Lee">
+          </div>
+          <div class="field">
+            <label for="f-email">Your email</label>
+            <input type="email" id="f-email" placeholder="jordan.lee@wallawalla.edu">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-major">Your intended major</label>
+            <select id="f-major"></select>
+          </div>
+          <div class="field">
+            <label>Interests (pick a few)</label>
+            <div class="tag-picker" id="f-interests"></div>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="save-intake">Save my info</button>
+      </div>
+      <div id="intake-saved" style="display:none;">
+        <div class="saved-line">
+          <div class="who">Browsing as <strong id="saved-name"></strong></div>
+          <button class="btn btn-ghost btn-small" id="edit-intake">Edit</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <aside class="filters">
+        <div class="filter-block">
+          <label class="block-label">Filter by major</label>
+          <select id="filter-major"></select>
+        </div>
+        <div class="filter-block">
+          <label class="block-label">Filter by interest</label>
+          <div class="tag-picker" id="filter-interests"></div>
+        </div>
+        <div class="filter-block">
+          <label class="block-label">Search</label>
+          <input type="text" id="filter-search" placeholder="Name or keyword">
+        </div>
+        <label class="match-toggle">
+          <input type="checkbox" id="sort-best" checked>
+          Sort by best match for me
+        </label>
+      </aside>
+
+      <div>
+        <div class="count-row">
+          <span id="result-count">0 Leaders</span>
+        </div>
+        <div class="grid" id="mentor-grid"></div>
+        <div class="empty" id="empty-state" style="display:none;">
+          No Leaders match those filters yet — try clearing a filter.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LEADER VIEW ============ -->
+  <section id="view-leader" style="display:none;">
+    <div class="intake-card leader-panel">
+      <h2>Add or update your Leader profile</h2>
+      <p class="hint">This saves to your device so you can return and edit it. To get onto the roster everyone sees, tap <strong>Send to BizBuddy admin</strong> below — it opens an email with your details ready to forward to the program coordinator.</p>
+
+      <div class="field">
+        <label for="l-name">Full name</label>
+        <input type="text" id="l-name" placeholder="Alex Rivera">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="l-email">Email</label>
+          <input type="email" id="l-email" placeholder="alex.rivera@wallawalla.edu">
+        </div>
+        <div class="field">
+          <label for="l-major">Major</label>
+          <select id="l-major"></select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Interests / things you can mentor on</label>
+        <div class="tag-picker" id="l-interests"></div>
+      </div>
+      <div class="field">
+        <label for="l-avail">Availability</label>
+        <input type="text" id="l-avail" placeholder="e.g. Weekday afternoons, over coffee or Zoom">
+      </div>
+      <div class="field">
+        <label for="l-bio">One-line bio</label>
+        <textarea id="l-bio" rows="2" placeholder="What you're studying, a fun fact, why you signed up to mentor."></textarea>
+      </div>
+      <div style="display:flex; gap:10px; margin-top:6px;">
+        <button class="btn btn-ghost" id="l-save">Save profile</button>
+        <button class="btn btn-primary" id="l-send">Send to BizBuddy admin</button>
+      </div>
+
+      <div class="roster-mini">
+        <h3>Current Leader roster (this device)</h3>
+        <div id="roster-preview"></div>
+        <p class="muted">This preview shows what's stored on this device. The roster incoming students actually see is the published version — the admin updates it after receiving new sign-ups.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div id="toast"></div>
+<button id="admin-fab" title="Admin">⚙</button>
+<div id="admin-panel">
+  <div class="admin-box">
+    <button class="admin-close" id="admin-close">×</button>
+    <h2>Roster admin</h2>
+    <p class="muted">Add, edit, or remove Leaders on the published roster. Changes here apply to what you export — republish the page with the updated file to make them visible to everyone.</p>
+    <div class="admin-list" id="admin-list"></div>
+    <p class="muted" style="margin-top:18px;">Paste a new roster as JSON (e.g. compiled from Leader sign-up emails), or export the current one:</p>
+    <textarea class="json-box" id="admin-json"></textarea>
+    <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+      <button class="btn btn-ghost btn-small" id="admin-load-current">Load current into box</button>
+      <button class="btn btn-ghost btn-small" id="admin-apply-json">Apply JSON above</button>
+      <button class="btn btn-primary btn-small" id="admin-export-csv">Export roster as CSV</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+
+  var MAJORS = ["Accounting","Finance","Marketing","Management","Entrepreneurship","Economics","International Business","Data Analytics","Undeclared / Exploring"];
+  var INTERESTS = ["Case competitions","Internships & job search","Study strategies","Networking","Entrepreneurship","Investing","Campus life","Grad school","Balancing work & school","Church & family life"];
+
+  var SEED_MENTORS = [
+    { id: "seed-1", name: "Maren Ostergaard", email: "maren.ostergaard@example.edu", major: "Finance", interests: ["Investing","Internships & job search","Networking"], availability: "Sunday evenings, over Zoom", bio: "Senior finance major, treasurer of the Investment Club, happy to talk internships or budgeting." },
+    { id: "seed-2", name: "Diego Fuentes", email: "diego.fuentes@example.edu", major: "Marketing", interests: ["Case competitions","Campus life","Entrepreneurship"], availability: "Weekday afternoons, coffee on campus", bio: "Marketing senior who's run two case-competition teams. Ask me about getting involved early." },
+    { id: "seed-3", name: "Priya Nathan", email: "priya.nathan@example.edu", major: "Accounting", interests: ["Study strategies","Grad school","Balancing work & school"], availability: "Weeknights after 7pm", bio: "Accounting senior heading into a master's program. I remember freshman year overwhelm well." },
+    { id: "seed-4", name: "Jonah Whitfield", email: "jonah.whitfield@example.edu", major: "Entrepreneurship", interests: ["Entrepreneurship","Networking","Church & family life"], availability: "Sabbath afternoons or by text", bio: "Running a small campus business since sophomore year. Glad to talk through a business idea." }
+  ];
+
+  var LS_MENTORS = "bizbuddy_mentors_v1";
+  var LS_FRESHMAN = "bizbuddy_freshman_v1";
+  var LS_LEADER_DRAFT = "bizbuddy_leader_draft_v1";
+
+  function loadMentors() {
+    try {
+      var raw = localStorage.getItem(LS_MENTORS);
+      if (raw) return JSON.parse(raw);
+    } catch(e) {}
+    return SEED_MENTORS.slice();
+  }
+  function saveMentors(list) {
+    try { localStorage.setItem(LS_MENTORS, JSON.stringify(list)); } catch(e) {}
+  }
+  function loadFreshman() {
+    try {
+      var raw = localStorage.getItem(LS_FRESHMAN);
+      if (raw) return JSON.parse(raw);
+    } catch(e) {}
+    return null;
+  }
+  function saveFreshman(obj) {
+    try { localStorage.setItem(LS_FRESHMAN, JSON.stringify(obj)); } catch(e) {}
+  }
+  function loadLeaderDraft() {
+    try {
+      var raw = localStorage.getItem(LS_LEADER_DRAFT);
+      if (raw) return JSON.parse(raw);
+    } catch(e) {}
+    return null;
+  }
+  function saveLeaderDraft(obj) {
+    try { localStorage.setItem(LS_LEADER_DRAFT, JSON.stringify(obj)); } catch(e) {}
+  }
+
+  var mentors = loadMentors();
+  var freshman = loadFreshman();
+  var filterInterests = [];
+  var freshmanInterests = (freshman && freshman.interests) ? freshman.interests.slice() : [];
+
+  function toast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 2200);
+  }
+
+  function fillSelect(sel, options, withAny) {
+    sel.innerHTML = "";
+    if (withAny) {
+      var o = document.createElement('option');
+      o.value = ""; o.textContent = "All majors";
+      sel.appendChild(o);
+    }
+    options.forEach(function(m){
+      var o = document.createElement('option');
+      o.value = m; o.textContent = m;
+      sel.appendChild(o);
+    });
+  }
+
+  fillSelect(document.getElementById('f-major'), MAJORS, false);
+  fillSelect(document.getElementById('l-major'), MAJORS, false);
+  fillSelect(document.getElementById('filter-major'), MAJORS, true);
+
+  function buildTagPicker(container, selectedArr, onChange) {
+    container.innerHTML = "";
+    INTERESTS.forEach(function(tag){
+      var chip = document.createElement('div');
+      chip.className = 'tag-chip' + (selectedArr.indexOf(tag) > -1 ? ' on' : '');
+      chip.textContent = tag;
+      chip.addEventListener('click', function(){
+        var idx = selectedArr.indexOf(tag);
+        if (idx > -1) selectedArr.splice(idx,1); else selectedArr.push(tag);
+        chip.classList.toggle('on');
+        onChange();
+      });
+      container.appendChild(chip);
+    });
+  }
+
+  buildTagPicker(document.getElementById('f-interests'), freshmanInterests, function(){});
+  buildTagPicker(document.getElementById('filter-interests'), filterInterests, renderMentors);
+
+  var leaderInterests = [];
+  buildTagPicker(document.getElementById('l-interests'), leaderInterests, function(){});
+
+  // ---------- Intake (freshman) ----------
+  function showSavedIntake() {
+    document.getElementById('intake-form').style.display = 'none';
+    document.getElementById('intake-saved').style.display = 'block';
+    document.getElementById('saved-name').textContent = freshman.name || "you";
+  }
+  function showIntakeForm() {
+    document.getElementById('intake-form').style.display = 'block';
+    document.getElementById('intake-saved').style.display = 'none';
+  }
+  if (freshman) {
+    document.getElementById('f-name').value = freshman.name || "";
+    document.getElementById('f-email').value = freshman.email || "";
+    document.getElementById('f-major').value = freshman.major || "";
+    showSavedIntake();
+  }
+  document.getElementById('save-intake').addEventListener('click', function(){
+    freshman = {
+      name: document.getElementById('f-name').value.trim(),
+      email: document.getElementById('f-email').value.trim(),
+      major: document.getElementById('f-major').value,
+      interests: freshmanInterests.slice()
+    };
+    saveFreshman(freshman);
+    showSavedIntake();
+    renderMentors();
+    toast("Saved. Matches are now personalized for you.");
+  });
+  document.getElementById('edit-intake').addEventListener('click', showIntakeForm);
+
+  // ---------- Filters ----------
+  ['filter-major','filter-search','sort-best'].forEach(function(id){
+    document.getElementById(id).addEventListener('input', renderMentors);
+    document.getElementById(id).addEventListener('change', renderMentors);
+  });
+
+  function scoreMentor(m) {
+    var score = 0;
+    if (freshman) {
+      if (freshman.major && m.major === freshman.major) score += 3;
+      (m.interests||[]).forEach(function(i){
+        if (freshmanInterests.indexOf(i) > -1) score += 1;
+      });
+    }
+    return score;
+  }
+
+  function renderMentors() {
+    var majorF = document.getElementById('filter-major').value;
+    var search = document.getElementById('filter-search').value.trim().toLowerCase();
+    var sortBest = document.getElementById('sort-best').checked;
+
+    var list = mentors.filter(function(m){
+      if (majorF && m.major !== majorF) return false;
+      if (filterInterests.length && !filterInterests.some(function(t){ return (m.interests||[]).indexOf(t) > -1; })) return false;
+      if (search) {
+        var hay = (m.name + " " + m.major + " " + (m.interests||[]).join(" ") + " " + (m.bio||"")).toLowerCase();
+        if (hay.indexOf(search) === -1) return false;
+      }
+      return true;
+    });
+
+    list.forEach(function(m){ m._score = scoreMentor(m); });
+    if (sortBest && freshman) {
+      list.sort(function(a,b){ return b._score - a._score; });
+    } else {
+      list.sort(function(a,b){ return a.name.localeCompare(b.name); });
+    }
+
+    var grid = document.getElementById('mentor-grid');
+    grid.innerHTML = "";
+    document.getElementById('result-count').textContent = list.length + (list.length === 1 ? " Leader" : " Leaders");
+    document.getElementById('empty-state').style.display = list.length ? 'none' : 'block';
+
+    var topScore = list.length ? list[0]._score : 0;
+
+    list.forEach(function(m){
+      var card = document.createElement('div');
+      card.className = 'card' + (sortBest && freshman && m._score > 0 && m._score === topScore ? ' best' : '');
+
+      var tagsHtml = (m.interests||[]).map(function(t){ return '<span class="pill">' + escapeHtml(t) + '</span>'; }).join('');
+
+      card.innerHTML =
+        '<p class="card-name">' + escapeHtml(m.name) + '</p>' +
+        '<p class="card-sub">' + escapeHtml(m.major) + '</p>' +
+        '<p class="card-bio">' + escapeHtml(m.bio||"") + '</p>' +
+        '<div class="card-tags">' + tagsHtml + '</div>' +
+        '<p class="card-avail">' + escapeHtml(m.availability||"") + '</p>' +
+        '<div class="card-actions">' +
+          '<a class="btn btn-primary" href="#" data-connect="' + m.id + '">Connect</a>' +
+          '<button class="btn btn-ghost btn-small" data-copy="' + m.id + '">Copy intro</button>' +
+        '</div>';
+      grid.appendChild(card);
+    });
+
+    grid.querySelectorAll('[data-connect]').forEach(function(btn){
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        var m = mentors.find(function(x){ return x.id === btn.getAttribute('data-connect'); });
+        connectTo(m);
+      });
+    });
+    grid.querySelectorAll('[data-copy]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var m = mentors.find(function(x){ return x.id === btn.getAttribute('data-copy'); });
+        var text = introText(m);
+        navigator.clipboard && navigator.clipboard.writeText(text).then(function(){
+          toast("Introduction copied — paste it into an email or message.");
+        });
+      });
+    });
+  }
+
+  function introText(m) {
+    var name = freshman && freshman.name ? freshman.name : "[your name]";
+    var major = freshman && freshman.major ? freshman.major : "[your intended major]";
+    var interests = freshmanInterests.length ? freshmanInterests.join(", ") : "[a few things you're interested in]";
+    return "Hi " + m.name.split(" ")[0] + ",\n\nI'm " + name + ", an incoming student planning to study " + major + ". I found you through the BizBuddy roster" +
+      (m.interests && m.interests.length ? " and saw we're both interested in " + m.interests.filter(function(i){return freshmanInterests.indexOf(i)>-1;}).concat(freshmanInterests.length?[]:[]).join(", ") : "") +
+      ". Would you be open to being my BizBuddy this year? I'm free " + "[your availability]" + " — let me know what works for you.\n\nThanks so much,\n" + name;
+  }
+
+  function connectTo(m) {
+    var subject = "BizBuddy match request";
+    var body = introText(m);
+    var mailto = "mailto:" + encodeURIComponent(m.email) + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+    window.location.href = mailto;
+  }
+
+  function escapeHtml(s) {
+    return String(s||"").replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  renderMentors();
+
+  // ---------- Role switch ----------
+  var tabF = document.getElementById('tab-freshman');
+  var tabL = document.getElementById('tab-leader');
+  tabF.addEventListener('click', function(){
+    tabF.classList.add('active'); tabL.classList.remove('active');
+    document.getElementById('view-freshman').style.display = 'block';
+    document.getElementById('view-leader').style.display = 'none';
+  });
+  tabL.addEventListener('click', function(){
+    tabL.classList.add('active'); tabF.classList.remove('active');
+    document.getElementById('view-freshman').style.display = 'none';
+    document.getElementById('view-leader').style.display = 'block';
+    renderRosterPreview();
+  });
+
+  // ---------- Leader form ----------
+  var draft = loadLeaderDraft();
+  if (draft) {
+    document.getElementById('l-name').value = draft.name || "";
+    document.getElementById('l-email').value = draft.email || "";
+    document.getElementById('l-major').value = draft.major || "";
+    document.getElementById('l-avail').value = draft.availability || "";
+    document.getElementById('l-bio').value = draft.bio || "";
+    leaderInterests = (draft.interests || []).slice();
+    buildTagPicker(document.getElementById('l-interests'), leaderInterests, function(){});
+  }
+
+  function readLeaderForm() {
+    return {
+      id: (draft && draft.id) || ("leader-" + Date.now()),
+      name: document.getElementById('l-name').value.trim(),
+      email: document.getElementById('l-email').value.trim(),
+      major: document.getElementById('l-major').value,
+      interests: leaderInterests.slice(),
+      availability: document.getElementById('l-avail').value.trim(),
+      bio: document.getElementById('l-bio').value.trim()
+    };
+  }
+
+  document.getElementById('l-save').addEventListener('click', function(){
+    if (!document.getElementById('l-name').value.trim()) { toast("Add your name first."); return; }
+    draft = readLeaderForm();
+    saveLeaderDraft(draft);
+    toast("Profile saved on this device.");
+    renderRosterPreview();
+  });
+
+  document.getElementById('l-send').addEventListener('click', function(){
+    if (!document.getElementById('l-name').value.trim() || !document.getElementById('l-email').value.trim()) {
+      toast("Add your name and email first."); return;
+    }
+    var d = readLeaderForm();
+    saveLeaderDraft(d);
+    var subject = "BizBuddy Leader sign-up: " + d.name;
+    var body = "New / updated BizBuddy Leader profile:\n\n" +
+      "Name: " + d.name + "\n" +
+      "Email: " + d.email + "\n" +
+      "Major: " + d.major + "\n" +
+      "Interests: " + d.interests.join(", ") + "\n" +
+      "Availability: " + d.availability + "\n" +
+      "Bio: " + d.bio + "\n\n" +
+      "(Paste this into the roster admin panel to add me to the published list.)";
+    var mailto = "mailto:?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+    window.location.href = mailto;
+  });
+
+  function renderRosterPreview() {
+    var wrap = document.getElementById('roster-preview');
+    wrap.innerHTML = "";
+    mentors.forEach(function(m){
+      var row = document.createElement('div');
+      row.className = 'mini-row';
+      row.innerHTML = '<span class="name">' + escapeHtml(m.name) + '</span><span class="muted">' + escapeHtml(m.major) + '</span>';
+      wrap.appendChild(row);
+    });
+  }
+
+  // ---------- Admin ----------
+  var fab = document.getElementById('admin-fab');
+  var panel = document.getElementById('admin-panel');
+  fab.addEventListener('click', function(){ panel.classList.add('open'); renderAdminList(); });
+  document.getElementById('admin-close').addEventListener('click', function(){ panel.classList.remove('open'); });
+  panel.addEventListener('click', function(e){ if (e.target === panel) panel.classList.remove('open'); });
+
+  function renderAdminList() {
+    var list = document.getElementById('admin-list');
+    list.innerHTML = "";
+    mentors.forEach(function(m){
+      var row = document.createElement('div');
+      row.className = 'admin-list-row';
+      row.innerHTML = '<span>' + escapeHtml(m.name) + ' — ' + escapeHtml(m.major) + '</span>';
+      var del = document.createElement('button');
+      del.textContent = "Remove";
+      del.addEventListener('click', function(){
+        mentors = mentors.filter(function(x){ return x.id !== m.id; });
+        saveMentors(mentors);
+        renderAdminList();
+        renderMentors();
+        renderRosterPreview();
+      });
+      row.appendChild(del);
+      list.appendChild(row);
+    });
+  }
+
+  document.getElementById('admin-load-current').addEventListener('click', function(){
+    document.getElementById('admin-json').value = JSON.stringify(mentors, null, 2);
+  });
+
+  document.getElementById('admin-apply-json').addEventListener('click', function(){
+    try {
+      var parsed = JSON.parse(document.getElementById('admin-json').value);
+      if (!Array.isArray(parsed)) throw new Error("not an array");
+      parsed.forEach(function(m, i){ if (!m.id) m.id = "leader-" + Date.now() + "-" + i; });
+      mentors = parsed;
+      saveMentors(mentors);
+      renderAdminList();
+      renderMentors();
+      renderRosterPreview();
+      toast("Roster updated on this device.");
+    } catch(e) {
+      toast("That JSON couldn't be read — check the format.");
+    }
+  });
+
+  document.getElementById('admin-export-csv').addEventListener('click', function(){
+    var header = ["Name","Email","Major","Interests","Availability","Bio"];
+    var rows = mentors.map(function(m){
+      return [m.name, m.email, m.major, (m.interests||[]).join("; "), m.availability, m.bio];
+    });
+    var csv = [header].concat(rows).map(function(r){
+      return r.map(function(cell){
+        var s = String(cell||"").replace(/"/g,'""');
+        return '"' + s + '"';
+      }).join(",");
+    }).join("\n");
+    var blob = new Blob([csv], {type: "text/csv"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = "bizbuddy-roster.csv";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+})();
+</script>
+</body>
+</html>
